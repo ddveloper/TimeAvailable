@@ -12,6 +12,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <style type="text/css">
+
     </style>
 </head>
 
@@ -26,9 +27,9 @@
 
     <!-- Begin page content -->
     <main class="container">
-	
+
         <form style="border: 2px solid #bbb; padding-left:20px; padding-top: 15px">
-            <div class="form-group row mb-3">	</div>
+            <div class="form-group row mb-3"> </div>
             <div class="form-group row mb-3">
                 <!-- head row -->
                 <label class="col-sm-2 col-form-label">Classroom:</label>
@@ -36,31 +37,38 @@
                     <select class="form-control" id="sel1" name="classroom"> </select>
                 </div>
             </div>
-			
-            <div class="form-group row mb-3">			
+
+            <div class="form-group row mb-3">
                 <!-- result rows -->
                 <label class="col-sm-2 col-form-label">Availability:</label>
             </div>
-			
 
-			<!-- 3 results -->
+
+            <!-- 3 results -->
         </form>
     </main>
 
     <script type="text/javascript">
         $(document).ready(function() {
-            $(".img-click").click(function() {
-                var pathStr = this.src;
-                pathStr = String(pathStr).substring(String(pathStr).indexOf("upload_"));
-                var parameters = {
-                    path: pathStr
-                };
-                $.get('/posterinfor', parameters, (data) => {
-                    console.log(data);
-                    updatePanel(data);
-                });
-                return false;
-            });
+            // TODO: populate classroom list to "sel1"
+
+            // TODO: read "csv" file, to database if possible
+
+            // TODO: when "sel1" changed, update "Availability" content (like 3 cards)
+
+
+            // $(".img-click").click(function() {
+            //     var pathStr = this.src;
+            //     pathStr = String(pathStr).substring(String(pathStr).indexOf("upload_"));
+            //     var parameters = {
+            //         path: pathStr
+            //     };
+            //     $.get('/posterinfor', parameters, (data) => {
+            //         console.log(data);
+            //         updatePanel(data);
+            //     });
+            //     return false;
+            // });
         });
     </script>
 </body>
