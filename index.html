@@ -7,7 +7,7 @@
             user-scalable=0" />
     <meta name="description" content="Query next available time slot">
     <meta name="author" content="Dawei Zhang">
-    <link rel="icon" href="./myico">
+    <!-- <link rel="icon" href="./myico"> -->
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
@@ -30,6 +30,14 @@
 
         <form style="border: 2px solid #bbb; padding-left:20px; padding-top: 15px">
             <div class="form-group row mb-3"> </div>
+
+            <div class="form-group row mb-3">
+                <!-- file input row -->
+                <div class="form-group col-sm-10">
+                    <input type="file" class="form-control-file" id="csv">
+                </div>
+            </div>
+
             <div class="form-group row mb-3">
                 <!-- head row -->
                 <label class="col-sm-2 col-form-label">Classroom:</label>
@@ -41,8 +49,8 @@
             <div class="form-group row mb-3">
                 <!-- result rows -->
                 <label class="col-sm-2 col-form-label">Availability:</label>
+                <div class="col-sm-8"><textarea class="form-control" name="description" id="ta1" placeholder="x"></textarea></div>
             </div>
-
 
             <!-- 3 results -->
         </form>
@@ -50,6 +58,8 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
+            readFile();
+
             // TODO: populate classroom list to "sel1"
 
             // TODO: read "csv" file, to database if possible
@@ -70,6 +80,27 @@
             //     return false;
             // });
         });
+
+        readFile = function() {
+            if (window.File && window.FileReader && window.FileList && window.Blob) {
+                // Great success! All the File APIs are supported.
+            } else {
+                alert('The File APIs are not fully supported in this browser.');
+            }
+
+            var fileInput = document.getElementById("csv"),
+
+                readFile = function() {
+                    var reader = new FileReader();
+                    reader.onload = function() {
+                        document.getElementById('ta1').innerHTML = reader.result;
+                    };
+                    // start reading the file. When it is done, calls the onload event defined above.
+                    reader.readAsBinaryString(fileInput.files[0]);
+                };
+
+            fileInput.addEventListener('change', readFile);
+        };
     </script>
 </body>
 
