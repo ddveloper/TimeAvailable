@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,
+            user-scalable=0" />
+    <meta name="description" content="Query next available time slot">
+    <meta name="author" content="Dawei Zhang">
+    <link rel="icon" href="./myico">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style type="text/css">
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="/index">Next Time Available</a>
+    </nav>
+
+    <!-- compensate the nav bar height -->
+    <hr class="mt-2 mb-5" />
+    <hr class="mt-2 mb-5" />
+
+    <!-- Begin page content -->
+    <main class="container">
+	
+        <form style="border: 2px solid #bbb; padding-left:20px; padding-top: 15px">
+            <div class="form-group row mb-3">	</div>
+            <div class="form-group row mb-3">
+                <!-- head row -->
+                <label class="col-sm-2 col-form-label">Classroom:</label>
+                <div class="col-sm-8">
+                    <select class="form-control" id="sel1" name="classroom"> </select>
+                </div>
+            </div>
+			
+            <div class="form-group row mb-3">			
+                <!-- result rows -->
+                <label class="col-sm-2 col-form-label">Availability:</label>
+            </div>
+			
+
+			<!-- 3 results -->
+        </form>
+    </main>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(".img-click").click(function() {
+                var pathStr = this.src;
+                pathStr = String(pathStr).substring(String(pathStr).indexOf("upload_"));
+                var parameters = {
+                    path: pathStr
+                };
+                $.get('/posterinfor', parameters, (data) => {
+                    console.log(data);
+                    updatePanel(data);
+                });
+                return false;
+            });
+        });
+    </script>
+</body>
+
+</html>
