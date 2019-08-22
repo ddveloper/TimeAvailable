@@ -11,6 +11,7 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/2.13.0/moment.min.js"></script>
 
     <style type="text/css">
 
@@ -104,9 +105,9 @@
             var classrooms = [];
             var output = [];
             dataObj.forEach(element => {
-                if (classrooms.includes(element["ROOM"]) == false) {
+                if (classrooms.includes(element["ROOM"]) === false) {
                     classrooms.push(element["ROOM"]);
-                    output.push('<option value="' + element["ROOM"] + '">' + element["ROOM"] + '</option>');
+                    output.push('<option value="' + element["ROOM"] + '">' + element["ROOM"].replace(' ', '') + '</option>');
                 }
             });
             $('#sel1').html(output.join(''));
@@ -115,7 +116,46 @@
         };
 
         updateAvailableTime = function() {
-            $("#ta1").text("hello");
+            const room = $("#sel1").val();
+            //const theTime = moment();
+            const theTime = moment("2019-10-07T16:34", "YYYY-MM-DDTHH:mm");
+            const nextAvailable1 = findAvailableTime(room, theTime);
+
+            $("#ta1").text($("#sel1").val());
+        };
+
+        findAvailableTime = function(room, theTime) {
+            var found = 0;
+            dataObj.forEach(element => {
+                if (element["ROOM"] === room) {
+                    var startDate = element["DATES"].substring(0, 6);
+                    var endDate = element["DATES"].substring(9, 15);
+                    startDate = moment(startDate, "DD-MMM").set('hour', 8).set('minute', 0).set('second', 0).set('millisecond', 0);
+                    endDate = moment(endDate, "DD-MMM").set('hour', 19).set('minute', 0).set('second', 0).set('millisecond', 0);
+                    var dif1 = startDate.diff(theTime, 'minutes');
+                    var dif2 = endDate.diff(theTime, 'minutes');
+                    //console.log(dif1, dif2);
+                    if (dif1 < 0 && dif2 > 0) { // within the period
+                        var days_time = element["MEETING TIMES"].split(' ');
+                        const wkdays = days_time[0];
+                        const hours = days_time[1];
+                        const targetDay = theTime.isoWeekday();
+                        if ((wkdays === ("SU") && targetDay === 7) ||
+                            (wkdays === ("TR") && targetDay === 4) ||
+                            (wkdays === ("T") && targetDay === 2) ||
+                            (wkdays.includes("M") && targetDay === 1) ||
+                            (wkdays.includes("W") && targetDay === 3) ||
+                            (wkdays.includes("F") && targetDay === 5)
+                        ) { // find the day match
+                            var startTime = hours.substring(0, 2) + ":" + hours.substring(2, 4);
+                            var endTime = hours.substring(5, 7) + ":" + hours.substring(7, 9);
+                            startTime = moment(startTime, "HH:mm");
+                            endTime = moment(endTime, "HH:mm");
+                            console.log("Found", wkdays, startTime, endTime);
+                        }
+                    }
+                }
+            });
         };
     </script>
 </body>
