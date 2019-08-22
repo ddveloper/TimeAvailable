@@ -11,6 +11,7 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
     <style type="text/css">
 
     </style>
@@ -59,27 +60,9 @@
     <script type="text/javascript">
         $(document).ready(function() {
             readFile();
-
-            // TODO: populate classroom list to "sel1"
-
-            // TODO: read "csv" file, to database if possible
-
-            // TODO: when "sel1" changed, update "Availability" content (like 3 cards)
-
-
-            // $(".img-click").click(function() {
-            //     var pathStr = this.src;
-            //     pathStr = String(pathStr).substring(String(pathStr).indexOf("upload_"));
-            //     var parameters = {
-            //         path: pathStr
-            //     };
-            //     $.get('/posterinfor', parameters, (data) => {
-            //         console.log(data);
-            //         updatePanel(data);
-            //     });
-            //     return false;
-            // });
         });
+
+        var dataObj = [];
 
         readFile = function() {
             if (window.File && window.FileReader && window.FileList && window.Blob) {
@@ -93,13 +76,46 @@
                 readFile = function() {
                     var reader = new FileReader();
                     reader.onload = function() {
-                        document.getElementById('ta1').innerHTML = reader.result;
+                        dataObj = [];
+                        // https://stackoverflow.com/questions/28543821/convert-csv-lines-into-javascript-objects/28544299
+                        var arr = reader.result.split('\n');
+                        var headers = arr[0].split(',');
+                        for (var i = 1; i < arr.length; i++) {
+                            var data = arr[i].split(',');
+                            var obj = {};
+                            for (var j = 0; j < data.length && j < 8; j++) {
+                                obj[headers[j].trim()] = data[j].trim();
+                            }
+                            if (obj["TERM"] !== "")
+                                dataObj.push(obj);
+                            else
+                                console.log("an empty entry");
+                        }
+                        populateClassrooms();
                     };
                     // start reading the file. When it is done, calls the onload event defined above.
                     reader.readAsBinaryString(fileInput.files[0]);
                 };
 
             fileInput.addEventListener('change', readFile);
+        };
+
+        populateClassrooms = function() {
+            var classrooms = [];
+            var output = [];
+            dataObj.forEach(element => {
+                if (classrooms.includes(element["ROOM"]) == false) {
+                    classrooms.push(element["ROOM"]);
+                    output.push('<option value="' + element["ROOM"] + '">' + element["ROOM"] + '</option>');
+                }
+            });
+            $('#sel1').html(output.join(''));
+            var selClassroom = document.getElementById("sel1");
+            selClassroom.addEventListener('change', updateAvailableTime);
+        };
+
+        updateAvailableTime = function() {
+            $("#ta1").text("hello");
         };
     </script>
 </body>
