@@ -133,7 +133,7 @@
 
             var nextAvailable = [];
             for (var i = 0; i < 5; i++) {
-                console.log(theTime.format("dddd, MMM DD, YY, hh:mm A"));
+                console.log(theTime.format("dddd, MMM DD, YY, H:mm"));
                 const day = theTime.day();
                 if ((day > 0 && day < 6) || (day > 7 && day < 10)) {
                     nextAvailable.push(findAvailableSlots(room, theTime, duration));
@@ -154,10 +154,11 @@
                     const timeS = moment(nextAvailable[i][j].start);
                     const timeP = moment(nextAvailable[i][j].end);
                     if (j === 0) {
-                        output.push(timeS.format("dddd, MMM DD:    "));
+                        output.push(timeS.format("ddd, MMM DD:\t"));
                     }
-                    output.push("[ From " + timeS.format("hh:mm A") + " to " + timeP.format("hh:mm A ]    "));
+                    output.push(" [" + timeS.format("HH:mm") + "-" + timeP.format("HH:mm] "));
                 }
+                output.push("\r\n");
             }
             $("#ta1").text(output.join(''));
         }
