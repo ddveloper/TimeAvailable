@@ -63,8 +63,9 @@
             readFile();
         });
 
-        var dataObj = [];
+        var dataObj = []; // global list for all entries in csv database
 
+        // set file open listener
         readFile = function() {
             if (window.File && window.FileReader && window.FileList && window.Blob) {
                 // Great success! All the File APIs are supported.
@@ -73,34 +74,38 @@
             }
 
             var fileInput = document.getElementById("csv"),
-
                 readFile = function() {
                     var reader = new FileReader();
                     reader.onload = function() {
-                        dataObj = [];
-                        // https://stackoverflow.com/questions/28543821/convert-csv-lines-into-javascript-objects/28544299
-                        var arr = reader.result.split('\n');
-                        var headers = arr[0].split(',');
-                        for (var i = 1; i < arr.length; i++) {
-                            var data = arr[i].split(',');
-                            var obj = {};
-                            for (var j = 0; j < data.length && j < 8; j++) {
-                                obj[headers[j].trim()] = data[j].trim();
-                            }
-                            if (obj["TERM"] !== "")
-                                dataObj.push(obj);
-                            else
-                                console.log("an empty entry");
-                        }
+                        csvToJsonObj(reader.result); // update "dataObj"
                         populateClassrooms();
                     };
                     // start reading the file. When it is done, calls the onload event defined above.
                     reader.readAsBinaryString(fileInput.files[0]);
                 };
-
             fileInput.addEventListener('change', readFile);
         };
 
+        // convert csv file to Json Object
+        // https://stackoverflow.com/questions/28543821/convert-csv-lines-into-javascript-objects/28544299
+        csvToJsonObj = function(csvResult) {
+            dataObj = [];
+            var arr = csvResult.split('\n');
+            var headers = arr[0].split(',');
+            for (var i = 1; i < arr.length; i++) {
+                var data = arr[i].split(',');
+                var obj = {};
+                for (var j = 0; j < data.length && j < 8; j++) {
+                    obj[headers[j].trim()] = data[j].trim();
+                }
+                if (obj["TERM"] !== "")
+                    dataObj.push(obj);
+                else
+                    console.log("an empty entry");
+            }
+        }
+
+        // file in "Classroom:" list
         populateClassrooms = function() {
             var classrooms = [];
             var output = [];
@@ -111,10 +116,13 @@
                 }
             });
             $('#sel1').html(output.join(''));
+
+            // listen to list item change event, update "Availability:" when changed
             var selClassroom = document.getElementById("sel1");
             selClassroom.addEventListener('change', updateAvailableTime);
         };
 
+        // update "Availability:" result
         updateAvailableTime = function() {
             const room = $("#sel1").val();
             //const theTime = moment();
@@ -124,39 +132,58 @@
             $("#ta1").text($("#sel1").val());
         };
 
+        // find available time for the day of "theTime"
         findAvailableTime = function(room, theTime) {
-            var found = 0;
+
+            // find the time list already reserved
+            var reservedList = [];
             dataObj.forEach(element => {
                 if (element["ROOM"] === room) {
-                    var startDate = element["DATES"].substring(0, 6);
-                    var endDate = element["DATES"].substring(9, 15);
-                    startDate = moment(startDate, "DD-MMM").set('hour', 8).set('minute', 0).set('second', 0).set('millisecond', 0);
-                    endDate = moment(endDate, "DD-MMM").set('hour', 19).set('minute', 0).set('second', 0).set('millisecond', 0);
-                    var dif1 = startDate.diff(theTime, 'minutes');
-                    var dif2 = endDate.diff(theTime, 'minutes');
-                    //console.log(dif1, dif2);
-                    if (dif1 < 0 && dif2 > 0) { // within the period
-                        var days_time = element["MEETING TIMES"].split(' ');
-                        const wkdays = days_time[0];
-                        const hours = days_time[1];
-                        const targetDay = theTime.isoWeekday();
-                        if ((wkdays === ("SU") && targetDay === 7) ||
-                            (wkdays === ("TR") && targetDay === 4) ||
-                            (wkdays === ("T") && targetDay === 2) ||
-                            (wkdays.includes("M") && targetDay === 1) ||
-                            (wkdays.includes("W") && targetDay === 3) ||
-                            (wkdays.includes("F") && targetDay === 5)
-                        ) { // find the day match
-                            var startTime = hours.substring(0, 2) + ":" + hours.substring(2, 4);
-                            var endTime = hours.substring(5, 7) + ":" + hours.substring(7, 9);
-                            startTime = moment(startTime, "HH:mm");
-                            endTime = moment(endTime, "HH:mm");
-                            console.log("Found", wkdays, startTime, endTime);
-                        }
-                    }
+                    const rsvdTime = timeReserved(element, theTime);
+                    if (Object.entries(rsvdTime).length === 2) // {startTime, endTime}
+                        reservedList.push(rsvdTime);
+                    else if (Object.entries(rsvdTime).length !== 0)
+                        console.error("multi slot in 1 entry");
                 }
             });
+            console.log(reservedList);
+
+
         };
+
+        // find reserved time in one entry
+        timeReserved = function(element, theTime) {
+            var startDate = element["DATES"].substring(0, 6);
+            var endDate = element["DATES"].substring(9, 15);
+            startDate = moment(startDate, "DD-MMM").set('hour', 8).set('minute', 0).set('second', 0).set('millisecond', 0);
+            endDate = moment(endDate, "DD-MMM").set('hour', 19).set('minute', 0).set('second', 0).set('millisecond', 0);
+            var dif1 = startDate.diff(theTime, 'minutes');
+            var dif2 = endDate.diff(theTime, 'minutes');
+            var days_time = element["MEETING TIMES"].split(' ');
+            const wkdays = days_time[0];
+            const hours = days_time[1];
+            const targetDay = theTime.isoWeekday();
+            var startTime = hours.substring(0, 2) + ":" + hours.substring(2, 4);
+            var endTime = hours.substring(5, 7) + ":" + hours.substring(7, 9);
+            startTime = moment(startTime, "HH:mm");
+            endTime = moment(endTime, "HH:mm");
+            //console.log(dif1, dif2);
+            if ((dif1 < 0 && dif2 > 0) && // within the date period
+                (wkdays === ("SU") && targetDay === 7) ||
+                (wkdays === ("TR") && targetDay === 4) ||
+                (wkdays === ("T") && targetDay === 2) ||
+                (wkdays.includes("M") && targetDay === 1) ||
+                (wkdays.includes("W") && targetDay === 3) || // find the work-day match
+                (wkdays.includes("F") && targetDay === 5)
+            ) {
+                //console.log("Found", wkdays, startTime, endTime);
+                return {
+                    startTime,
+                    endTime
+                };
+            }
+            return {};
+        }
     </script>
 </body>
 
