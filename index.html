@@ -30,7 +30,7 @@
     <!-- Begin page content -->
     <main class="container">
 
-        <form style="border: 2px solid #bbb; padding-left:20px; padding-top: 15px">
+        <form style="border: 2px solid #bbb; padding:20px;">
             <div class="form-group row mb-3"> </div>
 
             <div class="form-group row mb-3">
@@ -75,13 +75,15 @@
 
             var fileInput = document.getElementById("csv"),
                 readFile = function() {
-                    var reader = new FileReader();
-                    reader.onload = function() {
-                        csvToJsonObj(reader.result); // update "dataObj"
-                        populateClassrooms();
-                    };
-                    // start reading the file. When it is done, calls the onload event defined above.
-                    reader.readAsBinaryString(fileInput.files[0]);
+                    if (fileInput.files.length === 1) {
+                        var reader = new FileReader();
+                        reader.onload = function() {
+                            csvToJsonObj(reader.result); // update "dataObj"
+                            populateClassrooms();
+                        };
+                        // start reading the file. When it is done, calls the onload event defined above.
+                        reader.readAsBinaryString(fileInput.files[0]);
+                    }
                 };
             fileInput.addEventListener('change', readFile);
         };
@@ -128,9 +130,19 @@
             //const theTime = moment();
             const theTime = moment("2019-10-07T16:34", "YYYY-MM-DDTHH:mm");
             const duration = 30 * 60 * 1000; // find time slot > duration (ms)
-            const nextAvailable1 = findAvailableTime(room, theTime, duration);
 
-            $("#ta1").text(nextAvailable1);
+            var nextAvailable = [];
+            for (var i = 0; i < 5; i++) {
+                console.log(theTime.format("dddd, MMM DD, YY, hh:mm A"));
+                const day = theTime.day();
+                if ((day > 0 && day < 6) || (day > 7 && day < 10)) {
+                    nextAvailable.push(findAvailableTime(room, theTime, duration));
+                    if (nextAvailable.length === 3) break;
+                }
+                theTime.add(1, 'day');
+            }
+
+            $("#ta1").text(nextAvailable);
         };
 
         // find available time for the day of "theTime"
@@ -148,13 +160,13 @@
                 }
             });
             //console.log("reserved list:\n", reservedList);
-            return reverseFindSlots("08:00", "19:00", reservedList, duration);
+            return reverseFindSlots("08:00", "19:00", reservedList, duration, theTime);
         };
 
-        reverseFindSlots = function(onTimeStr, offTimeStr, reservedList, duration) {
+        reverseFindSlots = function(onTimeStr, offTimeStr, reservedList, duration, theTime) {
             // find the time other than reserved time (8:00am - 19:00pm)
-            const onTime = moment(onTimeStr, "HH:mm");
-            const offTime = moment(offTimeStr, "HH:mm");
+            const onTime = moment(onTimeStr, "HH:mm").year(theTime.year()).month(theTime.month()).date(theTime.date());
+            const offTime = moment(offTimeStr, "HH:mm").year(theTime.year()).month(theTime.month()).date(theTime.date());
             var slotList = [];
             slotList.push({
                 start: onTime,
@@ -197,8 +209,8 @@
             const targetDay = theTime.isoWeekday();
             var startTime = hours.substring(0, 2) + ":" + hours.substring(2, 4);
             var endTime = hours.substring(5, 7) + ":" + hours.substring(7, 9);
-            startTime = moment(startTime, "HH:mm");
-            endTime = moment(endTime, "HH:mm");
+            startTime = moment(startTime, "HH:mm").year(theTime.year()).month(theTime.month()).date(theTime.date());
+            endTime = moment(endTime, "HH:mm").year(theTime.year()).month(theTime.month()).date(theTime.date());
             //console.log(dif1, dif2);
             if ((dif1 < 0 && dif2 > 0) && // within the date period
                 (wkdays === ("SU") && targetDay === 7) ||
