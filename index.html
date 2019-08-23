@@ -127,13 +127,14 @@
             const room = $("#sel1").val();
             //const theTime = moment();
             const theTime = moment("2019-10-07T16:34", "YYYY-MM-DDTHH:mm");
-            const nextAvailable1 = findAvailableTime(room, theTime);
+            const duration = 30 * 60 * 1000; // find time slot > duration (ms)
+            const nextAvailable1 = findAvailableTime(room, theTime, duration);
 
-            $("#ta1").text($("#sel1").val());
+            $("#ta1").text(nextAvailable1);
         };
 
         // find available time for the day of "theTime"
-        findAvailableTime = function(room, theTime) {
+        findAvailableTime = function(room, theTime, duration) {
 
             // find the time list already reserved
             var reservedList = [];
@@ -146,10 +147,41 @@
                         console.error("multi slot in 1 entry");
                 }
             });
-            console.log(reservedList);
-
-
+            //console.log("reserved list:\n", reservedList);
+            return reverseFindSlots("08:00", "19:00", reservedList, duration);
         };
+
+        reverseFindSlots = function(onTimeStr, offTimeStr, reservedList, duration) {
+            // find the time other than reserved time (8:00am - 19:00pm)
+            const onTime = moment(onTimeStr, "HH:mm");
+            const offTime = moment(offTimeStr, "HH:mm");
+            var slotList = [];
+            slotList.push({
+                start: onTime,
+                end: offTime
+            });
+            for (var i = 0; i < reservedList.length; i++) {
+                const sTime = reservedList[i].start;
+                const pTime = reservedList[i].end;
+                for (var j = 0; j < slotList.length; j++) {
+                    const on = moment(slotList[j].start);
+                    const off = moment(slotList[j].end);
+                    if (on.diff(sTime) <= (0 - duration) && off.diff(sTime) > 0) { // cut in slot
+                        slotList[j].end = sTime;
+                        if (off.diff(pTime) > (0 + duration)) {
+                            slotList.push({
+                                start: pTime,
+                                end: off
+                            });
+                        } else {
+                            //console.log("off bound:", off, pTime);
+                        }
+                    }
+                }
+            }
+            console.log("available list:\n", slotList);
+            return slotList;
+        }
 
         // find reserved time in one entry
         timeReserved = function(element, theTime) {
@@ -178,8 +210,8 @@
             ) {
                 //console.log("Found", wkdays, startTime, endTime);
                 return {
-                    startTime,
-                    endTime
+                    start: startTime,
+                    end: endTime
                 };
             }
             return {};
