@@ -51,7 +51,7 @@
             <div class="form-group row mb-3">
                 <!-- result rows -->
                 <label class="col-sm-2 col-form-label">Availability:</label>
-                <div class="col-sm-8"><textarea class="form-control" name="description" id="ta1" placeholder="x"></textarea></div>
+                <div class="col-sm-8"><textarea readonly class="form-control" name="description" id="ta1" placeholder="" style="height: 110px"></textarea></div>
             </div>
 
             <!-- 3 results -->
@@ -121,11 +121,11 @@
 
             // listen to list item change event, update "Availability:" when changed
             var selClassroom = document.getElementById("sel1");
-            selClassroom.addEventListener('change', updateAvailableTime);
+            selClassroom.addEventListener('change', findAvailableTimes);
         };
 
-        // update "Availability:" result
-        updateAvailableTime = function() {
+        // find Availability results
+        findAvailableTimes = function() {
             const room = $("#sel1").val();
             //const theTime = moment();
             const theTime = moment("2019-10-07T16:34", "YYYY-MM-DDTHH:mm");
@@ -136,17 +136,34 @@
                 console.log(theTime.format("dddd, MMM DD, YY, hh:mm A"));
                 const day = theTime.day();
                 if ((day > 0 && day < 6) || (day > 7 && day < 10)) {
-                    nextAvailable.push(findAvailableTime(room, theTime, duration));
+                    nextAvailable.push(findAvailableSlots(room, theTime, duration));
                     if (nextAvailable.length === 3) break;
                 }
                 theTime.add(1, 'day');
             }
 
-            $("#ta1").text(nextAvailable);
+            updateAvailability(nextAvailable);
         };
 
+        // update "Availability:" in widget
+        updateAvailability = function(nextAvailable) {
+            var output = [];
+            $('#ta1').text("");
+            for (var i = 0; i < nextAvailable.length; i++) {
+                for (var j = 0; j < nextAvailable[i].length; j++) {
+                    const timeS = moment(nextAvailable[i][j].start);
+                    const timeP = moment(nextAvailable[i][j].end);
+                    if (j === 0) {
+                        output.push(timeS.format("dddd, MMM DD:    "));
+                    }
+                    output.push("[ From " + timeS.format("hh:mm A") + " to " + timeP.format("hh:mm A ]    "));
+                }
+            }
+            $("#ta1").text(output.join(''));
+        }
+
         // find available time for the day of "theTime"
-        findAvailableTime = function(room, theTime, duration) {
+        findAvailableSlots = function(room, theTime, duration) {
 
             // find the time list already reserved
             var reservedList = [];
@@ -191,7 +208,7 @@
                     }
                 }
             }
-            console.log("available list:\n", slotList);
+            console.log(slotList);
             return slotList;
         }
 
