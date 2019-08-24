@@ -59,10 +59,10 @@
 
             <div id="cards">
                 <!-- cards -->
-                <div class="form-group row mb-3" style="display: none">
+                <div class="form-group row mb-3">
                     <label class="col-sm-2 col-form-label"></label>
                     <div class="card border-success col-sm-8">
-                        <div class="card-header text-info">Mon</div>
+                        <div class="card-header text-white bg-info">Mon</div>
                         <div class="card-body">
                             <div class="progress col-sm-14" id="card2-bar" style="height: 20px">
                                 <div class="progress-bar" role="progressbar" style="width: 10%;"></div>
@@ -172,6 +172,18 @@
             createCards(nextAvailable, cpyTime);
         };
 
+        getDurationString = function(timeS, timeP) {
+            const duration = moment.duration(timeP.diff(timeS));
+            var hDuration = duration.hours();
+            var mDuration = duration.minutes();
+            var strDuration = "";
+            if (hDuration !== 0)
+                strDuration += hDuration + 'h';
+            if (mDuration !== 0)
+                strDuration += mDuration + 'm';
+            return strDuration;
+        }
+
         // update "Availability:" in widget
         updateAvailability = function(nextAvailable) {
             var output = [];
@@ -183,15 +195,7 @@
                     if (j === 0) {
                         output.push(timeS.format("ddd, MMM DD: "));
                     }
-                    const duration = moment.duration(timeP.diff(timeS));
-                    var hDuration = duration.hours();
-                    var mDuration = duration.minutes();
-                    var strDuration = "";
-                    if (hDuration !== 0)
-                        strDuration += hDuration + 'h';
-                    if (mDuration !== 0)
-                        strDuration += mDuration + 'm';
-                    output.push(" [" + timeS.format("HH:mm") + "-" + timeP.format("HH:mm] (") + strDuration + ") ");
+                    output.push(" [" + timeS.format("HH:mm") + "-" + timeP.format("HH:mm] (") + getDurationString(timeS, timeP) + ") ");
                 }
             }
             $("#ta1").val(output.join(''));
@@ -216,15 +220,15 @@
 
                 const head = jQuery('<div class="card-header"></div>');
                 if (timeChk.day() === theTime.day()) {
-                    head.addClass("text-success");
+                    head.addClass("boarder-success");
                     head.append(timeChk.format("dddd") + " (Today)");
                 } else {
-                    head.addClass("text-info");
+                    head.addClass("boarder-info");
                     head.append(timeChk.format("dddd"));
                 }
 
                 var bars = jQuery('<div class=\"card-body\"></div>');
-                var bars1 = jQuery('<div class=\"progress col-sm-14\" style=\"height: 20px\"></div>');
+                var bars1 = jQuery('<div class=\"progress col-sm-14\" style=\"height: 25px\"></div>');
                 const alldaylong = moment("19:00", "HH:mm").diff(moment("08:00", "HH:mm"));
                 var timeBegin = moment("08:00", "HH:mm").year(timeChk.year()).month(timeChk.month()).date(timeChk.date());
                 for (var j = 0; j < nextAvailable[i].length; j++) {
@@ -233,14 +237,20 @@
                     const diff1 = timeS.diff(timeBegin);
                     const diff2 = timeP.diff(timeS);
                     const barIdle = jQuery('<div class=\"progress-bar bg-light\" role=\"progressbar\" style=\"width: ' + Number(diff1 / alldaylong).toFixed(2) * 100 + '%\"></div>');
-                    const barOk = jQuery('<div class=\"progress-bar bg-success\" role=\"progressbar\" style=\"width: ' + Number(diff2 / alldaylong).toFixed(2) * 100 + '%\"></div>');
+                    const barOk = jQuery('<div class=\"progress-bar\" role=\"progressbar\" style=\"text-align: left; width: ' + Number(diff2 / alldaylong).toFixed(2) * 100 + '%\"></div>');
+                    if (timeChk.day() === theTime.day()) {
+                        barOk.addClass("bg-success");
+                    } else {
+                        barOk.addClass("bg-info");
+                    }
+                    barOk.append(timeS.format("H:mm"));
                     bars1.append(barIdle);
                     bars1.append(barOk);
                     timeBegin = timeP;
                 }
                 bars.append(bars1);
-                head.append(bars);
                 box.append(head);
+                box.append(bars);
                 card.append(box);
                 $('#cards').append(card);
             }
