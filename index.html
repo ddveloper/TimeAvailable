@@ -156,7 +156,15 @@
                     if (j === 0) {
                         output.push(timeS.format("ddd, MMM DD:\t"));
                     }
-                    output.push(" [" + timeS.format("HH:mm") + "-" + timeP.format("HH:mm] "));
+                    const duration = moment.duration(timeP.diff(timeS));
+                    var hDuration = duration.hours();
+                    var mDuration = duration.minutes();
+                    var strDuration = "";
+                    if (hDuration !== 0)
+                        strDuration += hDuration + 'h';
+                    if (mDuration !== 0)
+                        strDuration += mDuration + 'm';
+                    output.push(" [" + timeS.format("HH:mm") + "-" + timeP.format("HH:mm] (") + strDuration + ")");
                 }
                 output.push("\r\n");
             }
