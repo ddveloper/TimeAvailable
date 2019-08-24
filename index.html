@@ -14,27 +14,28 @@
     <script src="https://cdn.jsdelivr.net/momentjs/2.13.0/moment.min.js"></script>
 
     <style type="text/css">
-
+        .col-sm-8 {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
     </style>
 </head>
 
 <body>
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-        <a class="navbar-brand" href="/index">Next Time Available</a>
+        <a class="navbar-brand" href="#">AV Services - Next Available Time</a>
     </nav>
 
     <!-- compensate the nav bar height -->
     <hr class="mt-2 mb-5" />
-    <hr class="mt-2 mb-5" />
 
     <!-- Begin page content -->
-    <main class="container">
+    <main class="container" style="padding-bottom: 30px; padding-top: 30px">
 
         <form style="border: 2px solid #bbb; padding:20px;">
             <div class="form-group row mb-3"> </div>
 
             <div class="form-group row mb-3">
-                <!-- file input row -->
                 <div class="form-group col-sm-10">
                     <input type="file" class="form-control-file" id="csv">
                 </div>
@@ -51,12 +52,36 @@
             <div class="form-group row mb-3">
                 <!-- result rows -->
                 <label class="col-sm-2 col-form-label">Availability:</label>
-                <div class="col-sm-8"><textarea readonly class="form-control" name="description" id="ta1" placeholder="" style="height: 110px"></textarea></div>
+                <!-- <div class="col-sm-8"><textarea readonly class="form-control" name="description" id="ta1" placeholder="" style="height: 110px"></textarea></div> -->
+                <div class="col-sm-8"><input readonly class="form-control" type="text" id="ta1"></input>
+                </div>
             </div>
 
-            <!-- 3 results -->
+            <div id="cards">
+                <!-- cards -->
+                <div class="form-group row mb-3" style="display: none">
+                    <label class="col-sm-2 col-form-label"></label>
+                    <div class="card border-success col-sm-8">
+                        <div class="card-header text-info">Mon</div>
+                        <div class="card-body">
+                            <div class="progress col-sm-14" id="card2-bar" style="height: 20px">
+                                <div class="progress-bar" role="progressbar" style="width: 10%;"></div>
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 20%;"></div>
+                                <div class="progress-bar bg-info" role="progressbar" style="width: 30%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </form>
     </main>
+    <footer class="footer" style="position: fixed; bottom: 0px; left: 0px; right: 0px; widows: 100%; background-color: #eee">
+        <div class="container mb-3 mt-3" style="margin-left: 0px;">
+            <span class="text-muted">
+                <p style="font-size:medium; font-style: italic"> By Dawei Zhang, Copyright © 2019-2020, All rights reserved.</p>
+            </span>
+        </div>
+    </footer>
 
     <script type="text/javascript">
         $(document).ready(function() {
@@ -129,6 +154,7 @@
             const room = $("#sel1").val();
             //const theTime = moment();
             const theTime = moment("2019-10-07T16:34", "YYYY-MM-DDTHH:mm");
+            const cpyTime = theTime.clone();
             const duration = 30 * 60 * 1000; // find time slot > duration (ms)
 
             var nextAvailable = [];
@@ -143,18 +169,19 @@
             }
 
             updateAvailability(nextAvailable);
+            createCards(nextAvailable, cpyTime);
         };
 
         // update "Availability:" in widget
         updateAvailability = function(nextAvailable) {
             var output = [];
-            $('#ta1').text("");
+            $('#ta1').val("");
             for (var i = 0; i < nextAvailable.length; i++) {
                 for (var j = 0; j < nextAvailable[i].length; j++) {
                     const timeS = moment(nextAvailable[i][j].start);
                     const timeP = moment(nextAvailable[i][j].end);
                     if (j === 0) {
-                        output.push(timeS.format("ddd, MMM DD:\t"));
+                        output.push(timeS.format("ddd, MMM DD: "));
                     }
                     const duration = moment.duration(timeP.diff(timeS));
                     var hDuration = duration.hours();
@@ -164,12 +191,60 @@
                         strDuration += hDuration + 'h';
                     if (mDuration !== 0)
                         strDuration += mDuration + 'm';
-                    output.push(" [" + timeS.format("HH:mm") + "-" + timeP.format("HH:mm] (") + strDuration + ")");
+                    output.push(" [" + timeS.format("HH:mm") + "-" + timeP.format("HH:mm] (") + strDuration + ") ");
                 }
-                output.push("\r\n");
             }
-            $("#ta1").text(output.join(''));
+            $("#ta1").val(output.join(''));
         }
+
+        // update cards
+        createCards = function(nextAvailable, theTime) {
+            var output = [];
+            $('#cards').html("");
+            for (var i = 0; i < nextAvailable.length; i++) {
+                if (nextAvailable[i].length === 0) continue;
+                var card = jQuery('<div class=\"form-group row mb-3\"></div>');
+                const label = jQuery('<label class=\"col-sm-2 col-form-label\"></label>');
+                card.append(label);
+
+                var box = jQuery('<div class=\"card col-sm-8\"></div>');
+                const timeChk = moment(nextAvailable[i][0].start);
+                if (timeChk.day() === theTime.day())
+                    box.addClass("border-success");
+                else
+                    box.addClass("border-info");
+
+                const head = jQuery('<div class="card-header"></div>');
+                if (timeChk.day() === theTime.day()) {
+                    head.addClass("text-success");
+                    head.append(timeChk.format("dddd") + " (Today)");
+                } else {
+                    head.addClass("text-info");
+                    head.append(timeChk.format("dddd"));
+                }
+
+                var bars = jQuery('<div class=\"card-body\"></div>');
+                var bars1 = jQuery('<div class=\"progress col-sm-14\" style=\"height: 20px\"></div>');
+                const alldaylong = moment("19:00", "HH:mm").diff(moment("08:00", "HH:mm"));
+                var timeBegin = moment("08:00", "HH:mm").year(timeChk.year()).month(timeChk.month()).date(timeChk.date());
+                for (var j = 0; j < nextAvailable[i].length; j++) {
+                    const timeS = moment(nextAvailable[i][j].start);
+                    const timeP = moment(nextAvailable[i][j].end);
+                    const diff1 = timeS.diff(timeBegin);
+                    const diff2 = timeP.diff(timeS);
+                    const barIdle = jQuery('<div class=\"progress-bar bg-light\" role=\"progressbar\" style=\"width: ' + Number(diff1 / alldaylong).toFixed(2) * 100 + '%\"></div>');
+                    const barOk = jQuery('<div class=\"progress-bar bg-success\" role=\"progressbar\" style=\"width: ' + Number(diff2 / alldaylong).toFixed(2) * 100 + '%\"></div>');
+                    bars1.append(barIdle);
+                    bars1.append(barOk);
+                    timeBegin = timeP;
+                }
+                bars.append(bars1);
+                head.append(bars);
+                box.append(head);
+                card.append(box);
+                $('#cards').append(card);
+            }
+        };
 
         // find available time for the day of "theTime"
         findAvailableSlots = function(room, theTime, duration) {
