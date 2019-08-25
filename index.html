@@ -35,9 +35,12 @@
 <body>
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
         <a class="navbar-brand" href="#">AV Services - Next Available Time</a>
+        <div class="custom-file col-sm-2" style="padding-left: 0px; padding-right: 0px; display: none">
+            <input class="form-control" type="datetime-local" id="dtime1" value="2019-08-25T12:00:00"></div>
+        </div>
         <div class="custom-file col-sm-4" style="position:fixed; right: 0px">
             <input type="file" class="custom-file-input" id="csv">
-            <label class="custom-file-label" for="csv">Choose file</label>
+            <label class="custom-file-label text-danger" for="csv" id="txt">Open .csv file from DataMaster to continue...</label>
         </div>
     </nav>
 
@@ -77,13 +80,12 @@
                 <div class="form-group row mb-3">
                     <label class="col-sm-2 col-form-label"></label>
                     <div class="card border-success col-sm-8">
-                        <div class="card-header text-danger bg-light">Open .csv file from DataMaster to continue ...
+                        <div class="card-header bg-light">Date found
                         </div>
                         <div class="card-body">
                             <div class="progress col-sm-14" id="card2-bar" style="height: 20px">
-                                <div class="progress-bar" role="progressbar" style="width: 10%;"></div>
-                                <div class="progress-bar bg-success" role="progressbar" style="width: 20%;"></div>
-                                <div class="progress-bar bg-info" role="progressbar" style="width: 30%;"></div>
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 20%;">Today</div>
+                                <div class="progress-bar bg-info" role="progressbar" style="width: 30%;">Other Days</div>
                             </div>
                         </div>
                     </div>
@@ -127,8 +129,10 @@
                             csvToJsonObj(reader.result); // update "dataObj"
                             populateClassrooms();
                             populateDuration();
+                            populateDateTime();
                             findAvailableTimes();
                             $("#sel1").focus();
+                            $("#txt").removeClass("text-danger");
                         };
                         // start reading the file. When it is done, calls the onload event defined above.
                         reader.readAsBinaryString(fileInput.files[0]);
@@ -208,11 +212,22 @@
             selClassroom.addEventListener('change', findAvailableTimes);
         };
 
+        // file in "Classroom: " list
+        populateDateTime = function() {
+            var now = moment().format("YYYY-MM-DDTHH:mm");
+            $("#dtime1").val(now);
+
+            // listen to list item change event, update "Availability: " when changed
+            var selClassroom = document.getElementById("dtime1");
+            selClassroom.addEventListener('change', findAvailableTimes);
+        };
+
         // find Availability results
         findAvailableTimes = function() {
             const room = $("#sel1").val();
-            const theTime = moment();
+            //const theTime = moment();
             //const theTime = moment("2019-10-07T17:34", "YYYY-MM-DDTHH:mm");
+            const theTime = moment($("#dtime1").val(), "YYYY-MM-DDTHH:mm:ss");
             const cpyTime = theTime.clone();
 
             const duration = moment($('#sel2').val(), "HH:mm").diff(moment("00:00", "HH:mm"));
