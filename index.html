@@ -14,7 +14,8 @@
     <script src="https://cdn.jsdelivr.net/momentjs/2.13.0/moment.min.js"></script>
 
     <style type="text/css">
-        .col-sm-8 {
+        .col-sm-8,
+        .col-sm-3 {
             padding-left: 0px;
             padding-right: 0px;
         }
@@ -44,8 +45,12 @@
             <div class="form-group row mb-3">
                 <!-- head row -->
                 <label class="col-sm-2 col-form-label">Classroom:</label>
-                <div class="col-sm-8">
+                <div class="col-sm-3">
                     <select class="form-control" id="sel1" name="classroom"> </select>
+                </div>
+                <label class="col-sm-2 col-form-label">Duration:</label>
+                <div class="col-sm-3">
+                    <select class="form-control" id="sel2" name="duration"> </select>
                 </div>
             </div>
 
@@ -105,6 +110,7 @@
                         reader.onload = function() {
                             csvToJsonObj(reader.result); // update "dataObj"
                             populateClassrooms();
+                            populateDuration();
                         };
                         // start reading the file. When it is done, calls the onload event defined above.
                         reader.readAsBinaryString(fileInput.files[0]);
@@ -149,13 +155,29 @@
             selClassroom.addEventListener('change', findAvailableTimes);
         };
 
+        // file in "Classroom:" list
+        populateDuration = function() {
+            var durations = ["00:10", "00:20", "00:30", "01:00", "02:00", "03:00", "04:00", "05:00"];
+            var output = [];
+            durations.forEach(element => {
+                output.push('<option>' + element + '</option>');
+            });
+            $('#sel2').html(output.join(''));
+
+            // listen to list item change event, update "Availability:" when changed
+            var selClassroom = document.getElementById("sel2");
+            selClassroom.addEventListener('change', findAvailableTimes);
+        };
+
         // find Availability results
         findAvailableTimes = function() {
             const room = $("#sel1").val();
             //const theTime = moment();
             const theTime = moment("2019-10-07T17:34", "YYYY-MM-DDTHH:mm");
             const cpyTime = theTime.clone();
-            const duration = 10 * 60 * 1000; // find time slot > duration (ms)
+
+            const duration = moment($('#sel2').val(), "HH:mm").diff(moment("00:00", "HH:mm"));
+            //const duration = 10 * 60 * 1000; // find time slot > duration (ms)
 
             var nextAvailable = [];
             for (var i = 0; i < 5; i++) {
@@ -282,10 +304,12 @@
             const offTime = moment(offTimeStr, "HH:mm").year(theTime.year()).month(theTime.month()).date(theTime.date());
             var slotList = [];
             if (reservedList.length === 0) {
-                slotList.push({
-                    start: indexTime,
-                    end: offTime
-                });
+                if (offTime.diff(indexTime) >= duration) {
+                    slotList.push({
+                        start: indexTime,
+                        end: offTime
+                    });
+                }
             } else {
                 for (var i = 0; i < reservedList.length; i++) {
                     const sTime = reservedList[i].start;
