@@ -14,6 +14,10 @@
     <script src="https://cdn.jsdelivr.net/momentjs/2.13.0/moment.min.js"></script>
 
     <style type="text/css">
+        .col-sm-2 {
+            text-align: center
+        }
+        
         .col-sm-8,
         .col-sm-3 {
             padding-left: 0px;
@@ -160,7 +164,10 @@
             var durations = ["00:10", "00:20", "00:30", "01:00", "02:00", "03:00", "04:00", "05:00"];
             var output = [];
             durations.forEach(element => {
-                output.push('<option>' + element + '</option>');
+                if (element === "00:30")
+                    output.push('<option selected>' + element + '</option>');
+                else
+                    output.push('<option>' + element + '</option>');
             });
             $('#sel2').html(output.join(''));
 
@@ -180,10 +187,10 @@
             //const duration = 10 * 60 * 1000; // find time slot > duration (ms)
 
             var nextAvailable = [];
-            for (var i = 0; i < 5; i++) {
+            for (var i = 0; i < 30; i++) {
                 console.log(theTime.format("dddd, MMM DD, YY, H:mm"));
                 const day = theTime.day();
-                if ((day > 0 && day < 6) || (day > 7 && day < 10)) {
+                if ((day % 7) !== 6 && (day % 7) !== 0) {
                     var slotList = findAvailableSlots(room, theTime, duration);
                     if (slotList.length > 0)
                         nextAvailable.push(slotList);
@@ -248,7 +255,7 @@
                     head.append(timeChk.format("dddd") + " (Today)");
                 } else {
                     head.addClass("boarder-info");
-                    head.append(timeChk.format("dddd"));
+                    head.append(timeChk.format("dddd, MMM DD"));
                 }
 
                 var bars = jQuery('<div class=\"card-body\"></div>');
