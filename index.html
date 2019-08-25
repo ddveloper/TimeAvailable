@@ -19,6 +19,11 @@
             text-align: center
         }
         
+        .col-sm-4 {
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+        
         .col-sm-8,
         .col-sm-3 {
             padding-left: 0px;
@@ -206,15 +211,15 @@
         // find Availability results
         findAvailableTimes = function() {
             const room = $("#sel1").val();
-            //const theTime = moment();
-            const theTime = moment("2019-10-07T17:34", "YYYY-MM-DDTHH:mm");
+            const theTime = moment();
+            //const theTime = moment("2019-10-07T17:34", "YYYY-MM-DDTHH:mm");
             const cpyTime = theTime.clone();
 
             const duration = moment($('#sel2').val(), "HH:mm").diff(moment("00:00", "HH:mm"));
             //const duration = 10 * 60 * 1000; // find time slot > duration (ms)
 
             var nextAvailable = [];
-            for (var i = 0; i < 30; i++) {
+            for (var i = 0; i < 60; i++) {
                 console.log(theTime.format("dddd, MMM DD, YY, H:mm"));
                 const day = theTime.day();
                 if ((day % 7) !== 6 && (day % 7) !== 0) {
@@ -386,12 +391,12 @@
             endTime = moment(endTime, "HH:mm").year(theTime.year()).month(theTime.month()).date(theTime.date());
             //console.log(dif1, dif2);
             if ((dif1 < 0 && dif2 > 0) && // within the date period
-                (wkdays === ("SU") && targetDay === 7) ||
-                (wkdays === ("TR") && targetDay === 4) ||
-                (wkdays === ("T") && targetDay === 2) ||
-                (wkdays.includes("M") && targetDay === 1) ||
-                (wkdays.includes("W") && targetDay === 3) || // find the work-day match
-                (wkdays.includes("F") && targetDay === 5)
+                ((wkdays === ("SU") && targetDay === 7) ||
+                    (wkdays.includes("M") && targetDay === 1) ||
+                    (wkdays.includes("T") && targetDay === 2) ||
+                    (wkdays.includes("W") && targetDay === 3) ||
+                    (wkdays.includes("R") && targetDay === 4) ||
+                    (wkdays.includes("F") && targetDay === 5)) // find the work-day match
             ) {
                 //console.log("Found", wkdays, startTime, endTime);
                 return {
