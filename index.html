@@ -79,7 +79,7 @@
                 <div class="form-group row mb-3">
                     <label class="col-sm-2 col-form-label"></label>
                     <div class="card border-success col-sm-8">
-                        <div class="card-header bg-light">Dates found (3 of them)
+                        <div class="card-header bg-light">Dates found (3 of them) -- 8:00 to 19:00 --
                         </div>
                         <div class="card-body">
                             <div class="progress col-sm-14" id="card2-bar" style="height: 20px">
@@ -337,7 +337,7 @@
                     } else {
                         barOk.addClass("bg-info");
                     }
-                    barOk.append(timeS.format("H:mm-") + getDurationString(timeS, timeP));
+                    barOk.append(timeS.format("H:mm_") + getDurationString(timeS, timeP));
                     bars1.append(barIdle);
                     bars1.append(barOk);
                     timeBegin = timeP;
