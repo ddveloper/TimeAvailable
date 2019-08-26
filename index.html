@@ -35,7 +35,7 @@
 <body>
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
         <a class="navbar-brand" href="#">AV Services - Next Available Time</a>
-        <button type="button" class="btn mr-2" style="display: none" id="dtimeframe"><i class="fa fa-inverse fa-chevron-circle-right" id="btn-icon"></i></button>
+        <button type="button" class="btn mr-2" style="display: none" id="dtimeframe"><i class="fa fa-inverse fa-hand-o-right" id="btn-icon"></i></button>
         <input class="form-control col-sm-2" type="datetime-local" id="dtime1" style="display: none" value="2019-08-25T12:00:00"></input>
         <div class="custom-file col-sm-4" style="position:fixed; right: 0px">
             <input type="file" class="custom-file-input" id="csv">
@@ -113,14 +113,14 @@
                 if (token) {
                     $("#dtime1").show();
                     token = false;
-                    $("#btn-icon").removeClass("fa-chevron-circle-right");
-                    $("#btn-icon").addClass("fa-chevron-circle-left");
+                    $("#btn-icon").removeClass("fa-hand-o-right");
+                    $("#btn-icon").addClass("fa-hand-o-left");
                     populateDateTime();
                 } else {
                     $("#dtime1").hide();
                     token = true;
-                    $("#btn-icon").removeClass("fa-chevron-circle-left");
-                    $("#btn-icon").addClass("fa-chevron-circle-right");
+                    $("#btn-icon").removeClass("fa-hand-o-left");
+                    $("#btn-icon").addClass("fa-hand-o-right");
                     findAvailableTimes();
                 }
             });
