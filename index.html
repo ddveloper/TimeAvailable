@@ -35,12 +35,11 @@
 <body>
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
         <a class="navbar-brand" href="#">AV Services - Next Available Time</a>
-        <div class="custom-file col-sm-2" style="padding-left: 0px; padding-right: 0px; display: none">
-            <input class="form-control" type="datetime-local" id="dtime1" value="2019-08-25T12:00:00"></div>
-        </div>
+        <button type="button" class="btn mr-2" style="display: none" id="dtimeframe"><i class="fa fa-inverse fa-chevron-circle-right" id="btn-icon"></i></button>
+        <input class="form-control col-sm-2" type="datetime-local" id="dtime1" style="display: none" value="2019-08-25T12:00:00"></input>
         <div class="custom-file col-sm-4" style="position:fixed; right: 0px">
             <input type="file" class="custom-file-input" id="csv">
-            <label class="custom-file-label text-danger" for="csv" id="txt">Open .csv file from DataMaster to continue...</label>
+            <label class="custom-file-label text-danger" for="csv" id="txt">Open Datamaster .csv file...</label>
         </div>
     </nav>
 
@@ -48,7 +47,7 @@
     <hr class="mt-2 mb-5" />
 
     <!-- Begin page content -->
-    <main class="container" style="padding-bottom: 30px; padding-top: 30px">
+    <main class="container" style="padding-bottom: 25px; padding-top: 25px">
 
         <form style="border: 2px solid #bbb; padding:20px;">
 
@@ -80,7 +79,7 @@
                 <div class="form-group row mb-3">
                     <label class="col-sm-2 col-form-label"></label>
                     <div class="card border-success col-sm-8">
-                        <div class="card-header bg-light">Date found
+                        <div class="card-header bg-light">Dates found (3 of them)
                         </div>
                         <div class="card-body">
                             <div class="progress col-sm-14" id="card2-bar" style="height: 20px">
@@ -94,7 +93,7 @@
         </form>
     </main>
     <footer class="footer" style="position: fixed; bottom: 0px; left: 0px; right: 0px; widows: 100%; background-color: #eee">
-        <div class="container mb-3 mt-3" style="margin-left: 0px;">
+        <div class="container mb-1 mt-3" style="margin-left: 0px;">
             <span class="text-muted">
                 <p style="font-size:medium; font-style: italic"> By Dawei Zhang, Copyright © 2019-2020, All rights reserved.</p>
             </span>
@@ -107,8 +106,24 @@
             $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
         });
 
+        var token = true;
         $(document).ready(function() {
             readFile();
+            $("#dtimeframe").click(function() {
+                if (token) {
+                    $("#dtime1").show();
+                    token = false;
+                    $("#btn-icon").removeClass("fa-chevron-circle-right");
+                    $("#btn-icon").addClass("fa-chevron-circle-left");
+                    populateDateTime();
+                } else {
+                    $("#dtime1").hide();
+                    token = true;
+                    $("#btn-icon").removeClass("fa-chevron-circle-left");
+                    $("#btn-icon").addClass("fa-chevron-circle-right");
+                    findAvailableTimes();
+                }
+            });
         });
 
         var dataObj = []; // global list for all entries in csv database
@@ -129,10 +144,10 @@
                             csvToJsonObj(reader.result); // update "dataObj"
                             populateClassrooms();
                             populateDuration();
-                            populateDateTime();
                             findAvailableTimes();
                             $("#sel1").focus();
                             $("#txt").removeClass("text-danger");
+                            $("#dtimeframe").show();
                         };
                         // start reading the file. When it is done, calls the onload event defined above.
                         reader.readAsBinaryString(fileInput.files[0]);
@@ -225,9 +240,10 @@
         // find Availability results
         findAvailableTimes = function() {
             const room = $("#sel1").val();
-            //const theTime = moment();
+            var theTime = moment();
             //const theTime = moment("2019-10-07T17:34", "YYYY-MM-DDTHH:mm");
-            const theTime = moment($("#dtime1").val(), "YYYY-MM-DDTHH:mm:ss");
+            if (token === false)
+                theTime = moment($("#dtime1").val(), "YYYY-MM-DDTHH:mm:ss");
             const cpyTime = theTime.clone();
 
             const duration = moment($('#sel2').val(), "HH:mm").diff(moment("00:00", "HH:mm"));
