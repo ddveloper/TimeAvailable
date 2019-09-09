@@ -422,12 +422,13 @@
             endTime = moment(endTime, "HH:mm").year(theTime.year()).month(theTime.month()).date(theTime.date());
             //console.log(dif1, dif2);
             if ((dif1 < 0 && dif2 > 0) && // within the date period
-                ((wkdays === ("SU") && targetDay === 7) ||
+                ((wkdays === ("U") && targetDay === 7) ||
                     (wkdays.includes("M") && targetDay === 1) ||
                     (wkdays.includes("T") && targetDay === 2) ||
                     (wkdays.includes("W") && targetDay === 3) ||
                     (wkdays.includes("R") && targetDay === 4) ||
-                    (wkdays.includes("F") && targetDay === 5)) // find the work-day match
+                    (wkdays.includes("F") && targetDay === 5) ||
+                    (wkdays.includes("S") && targetDay === 6)) // find the work-day match
             ) {
                 //console.log("Found", wkdays, startTime, endTime);
                 return {
