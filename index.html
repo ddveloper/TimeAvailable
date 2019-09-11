@@ -330,8 +330,8 @@
                     const timeP = moment(nextAvailable[i][j].end);
                     const diff1 = timeS.diff(timeBegin);
                     const diff2 = timeP.diff(timeS);
-                    const barIdle = jQuery('<div class=\"progress-bar text-warning bg-transparent\" role=\"progressbar\" style=\"width: ' + Number(diff1 / alldaylong).toFixed(2) * 100 + '%\"></div>');
-                    const barOk = jQuery('<div class=\"progress-bar text-warning\" role=\"progressbar\" style=\"text-align: left; width: ' + Number(diff2 / alldaylong).toFixed(2) * 100 + '%\"></div>');
+                    const barIdle = jQuery('<div class=\"progress-bar text-white bg-transparent\" role=\"progressbar\" style=\"width: ' + Number(diff1 / alldaylong).toFixed(2) * 100 + '%\"></div>');
+                    const barOk = jQuery('<div class=\"progress-bar text-white\" role=\"progressbar\" style=\"text-align: left; width: ' + Number(diff2 / alldaylong).toFixed(2) * 100 + '%\"></div>');
                     if (timeChk.day() === theTime.day()) {
                         barOk.addClass("bg-success");
                     } else {
