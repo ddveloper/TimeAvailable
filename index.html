@@ -33,13 +33,25 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
         <a class="navbar-brand" href="#">AV Services - Next Available Time</a>
-        <button type="button" class="btn mr-2" style="display: none" id="dtimeframe"><i class="fa fa-inverse fa-hand-o-right" id="btn-icon"></i></button>
-        <input class="form-control col-sm-2" type="datetime-local" id="dtime1" style="display: none" value="2019-08-25T12:00:00"></input>
-        <div class="custom-file col-sm-4" style="position:fixed; right: 0px">
-            <input type="file" class="custom-file-input" id="csv">
-            <label class="custom-file-label text-danger" for="csv" id="txt">Open Datamaster .csv file...</label>
+        <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <form class="form-inline nav-item mr-auto">
+                <div class="input-group">
+                    <button type="button" class="btn btn-sm mr-2" id="dtimeframe" style="display: none; margin-top: 8px; margin-bottom: 4px"><i class="fa fa-inverse fa-hand-o-right" id="btn-icon"></i></button>
+                    <input class="form-control col-sm-10" type="datetime-local" id="dtime1" style="display: none; margin-top: 4px" value="2019-08-25T12:00:00"></input>
+                </div>
+            </form>
+            <form class="form-inline nav-item mt-2 mt-md-0">
+                <div class="input-group">
+                    <input type="file" class="custom-file-input" id="csv" required>
+                    <label class="custom-file-label text-danger" for="csv" id="txt" style="overflow: hidden; text-overflow: ellipsis; padding-right: 80px">Open Datamaster .csv file...</label>
+                </div>
+            </form>
         </div>
     </nav>
 
