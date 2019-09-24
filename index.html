@@ -200,8 +200,8 @@
                 }
                 if (obj["TERM"] !== "")
                     dataObj.push(obj);
-                else
-                    console.log("an empty entry");
+                // else
+                //     console.log("an empty entry");
             }
         }
 
@@ -251,6 +251,7 @@
 
         // find Availability results
         findAvailableTimes = function() {
+            console.log("-------- -------- --------");
             const room = $("#sel1").val();
             var theTime = moment();
             //const theTime = moment("2019-10-07T17:34", "YYYY-MM-DDTHH:mm");
@@ -263,7 +264,7 @@
 
             var nextAvailable = [];
             for (var i = 0; i < 60; i++) {
-                console.log(theTime.format("dddd, MMM DD, YY, H:mm"));
+                console.log(theTime.format("  * dddd, MMM DD, YY, H:mm"));
                 const day = theTime.day();
                 if ((day % 7) !== 6 && (day % 7) !== 0) {
                     var slotList = findAvailableSlots(room, theTime, duration);
@@ -370,13 +371,13 @@
             dataObj.forEach(element => {
                 if (element["ROOM"] === room) {
                     const rsvdTime = timeReserved(element, theTime);
-                    if (Object.entries(rsvdTime).length === 2) // {startTime, endTime}
+                    if (Object.entries(rsvdTime).length === 3) // {startTime, endTime, clas}
                         reservedList.push(rsvdTime);
                     else if (Object.entries(rsvdTime).length !== 0)
                         console.error("multi slot in 1 entry");
                 }
             });
-            console.log("reserved list:\n", reservedList);
+            console.log("\treserved list:", reservedList);
             return reverseFindSlots(theTime.format("HH:mm"), "19:00", reservedList, duration, theTime);
         };
 
@@ -412,7 +413,7 @@
                     })
                 }
             }
-            console.log(slotList);
+            console.log("\tAvailable:", slotList);
             return slotList;
         }
 
@@ -425,6 +426,8 @@
             var dif1 = startDate.diff(theTime, 'minutes');
             var dif2 = endDate.diff(theTime, 'minutes');
             var days_time = element["MEETING TIMES"].split(' ');
+            const classInfo = element["CLASS"];
+            //const instructorInfo = element["INSTRUCTOR"];
             const wkdays = days_time[0];
             const hours = days_time[1];
             const targetDay = theTime.isoWeekday();
@@ -445,7 +448,9 @@
                 //console.log("Found", wkdays, startTime, endTime);
                 return {
                     start: startTime,
-                    end: endTime
+                    end: endTime,
+                    clas: classInfo,
+                    //inst: instructorInfo
                 };
             }
             return {};
