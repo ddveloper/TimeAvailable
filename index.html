@@ -29,6 +29,14 @@
             padding-left: 0px;
             padding-right: 0px;
         }
+        
+        .bg-success {
+            cursor: pointer;
+        }
+        
+        .bg-info {
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -351,6 +359,8 @@
                         barOk.addClass("bg-info");
                     }
                     barOk.append(timeS.format("h:mm_") + getDurationString(timeS, timeP));
+                    ggCalendarUrl = buildGCUrl(timeS)
+                    barOk.attr('onclick', "window.open('" + ggCalendarUrl + "', '_blank');")
                     bars1.append(barIdle);
                     bars1.append(barOk);
                     timeBegin = timeP;
@@ -362,6 +372,20 @@
                 $('#cards').append(card);
             }
         };
+
+        buildGCUrl = function(timeS) {
+            str = "http://www.google.com/calendar/event?action=TEMPLATE&dates=";
+            str += timeS.format("YYYYMMDDTHHmmss");
+            str += "%2F";
+            duration = moment.duration($('#sel2').val()).asMinutes();
+            str += timeS.add(duration, 'm').format("YYYYMMDDTHHmmss");
+            str += "&text=";
+            str += $('#sel1').children("option:selected").val(); // classroom
+            str += "%20-%20General%20Training";
+            str += "&location=&details="
+            str += "&src=pdx.edu_9mlocs8dpp5tujl3ouaa8akudo@group.calendar.google.com"
+            return str;
+        }
 
         // find available time for the day of "theTime"
         findAvailableSlots = function(room, theTime, duration) {
