@@ -445,7 +445,7 @@
         timeReserved = function(element, theTime) {
             var startDate = element["DATES"].substring(0, 6);
             var endDate = element["DATES"].substring(9, 15);
-            startDate = moment(startDate, "DD-MMM").set('hour', 8).set('minute', 0).set('second', 0).set('millisecond', 0);
+            startDate = moment(startDate, "DD-MMM").set('hour', 0).set('minute', 0).set('second', 0).set('millisecond', 0);
             endDate = moment(endDate, "DD-MMM").set('hour', 19).set('minute', 0).set('second', 0).set('millisecond', 0);
             var dif1 = startDate.diff(theTime, 'minutes');
             var dif2 = endDate.diff(theTime, 'minutes');
