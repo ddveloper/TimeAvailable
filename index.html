@@ -328,13 +328,13 @@
 
                 var box = jQuery('<div class=\"card col-sm-8\"></div>');
                 const timeChk = moment(nextAvailable[i][0].start);
-                if (timeChk.day() === theTime.day())
+                if (timeChk.date() === theTime.date())
                     box.addClass("border-success");
                 else
                     box.addClass("border-info");
 
                 const head = jQuery('<div class="card-header"></div>');
-                if (timeChk.day() === theTime.day()) {
+                if (timeChk.date() === theTime.date()) {
                     head.addClass("boarder-success");
                     head.append(timeChk.format("dddd") + " (Today)");
                 } else {
@@ -353,7 +353,7 @@
                     const diff2 = timeP.diff(timeS);
                     const barIdle = jQuery('<div class=\"progress-bar text-white bg-transparent\" role=\"progressbar\" style=\"width: ' + Number(diff1 / alldaylong).toFixed(2) * 100 + '%\"></div>');
                     const barOk = jQuery('<div class=\"progress-bar text-white\" role=\"progressbar\" style=\"text-align: left; width: ' + Number(diff2 / alldaylong).toFixed(2) * 100 + '%\"></div>');
-                    if (timeChk.day() === theTime.day()) {
+                    if (timeChk.date() === theTime.date()) {
                         barOk.addClass("bg-success");
                     } else {
                         barOk.addClass("bg-info");
