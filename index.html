@@ -278,7 +278,7 @@
                     var slotList = findAvailableSlots(room, theTime, duration);
                     if (slotList.length > 0)
                         nextAvailable.push(slotList);
-                    if (nextAvailable.length === 3) break;
+                    if (nextAvailable.length === 5) break;
                 }
                 theTime.add(1, 'day').hour(8).minute(0).second(0).millisecond(0);
             }
