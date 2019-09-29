@@ -360,7 +360,8 @@
                     }
                     barOk.append(timeS.format("h:mm_") + getDurationString(timeS, timeP));
                     ggCalendarUrl = buildGCUrl(timeS)
-                    barOk.attr('onclick', "window.open('" + ggCalendarUrl + "', '_blank');")
+                    zsShiftUrl = buildZSUrl(timeS)
+                    barOk.attr('onclick', "openTabUrls(ggCalendarUrl, zsShiftUrl)")
                     bars1.append(barIdle);
                     bars1.append(barOk);
                     timeBegin = timeP;
@@ -373,18 +374,71 @@
             }
         };
 
+        openTabUrls = function(ggUrl, zsUrl) {
+            window.open(ggUrl, '_blank');
+            window.open(zsUrl, '_blank');
+            // $.ajax({
+            //     url: zsUrl,
+            //     type: 'GET',
+            //     contentType: 'application/json',
+            //     headers: {
+            //         'Authorization': 'Bearer <ZoALvunKS2Xpqgg0rEbmOWnZ2r0bVJOquq/sSCxJb38YNjQS3G4YZk2z0WSCn1VGLjziIcc2Y9pr0BE0FordYQ==>'
+            //     },
+            //     success: function(result) {
+            //         alert("sucess")
+            //     },
+            //     error: function(error) {
+            //         alert("failed")
+            //     }
+            // });
+        }
+
         buildGCUrl = function(timeS) {
             str = "http://www.google.com/calendar/event?action=TEMPLATE&dates=";
             str += timeS.format("YYYYMMDDTHHmmss");
             str += "%2F";
             duration = moment.duration($('#sel2').val()).asMinutes();
             str += timeS.add(duration, 'm').format("YYYYMMDDTHHmmss");
+            //avers = getAvailableAVers(timeS, duration);
             str += "&text=";
             str += $('#sel1').children("option:selected").val(); // classroom
             str += "%20-%20General%20Training";
             str += "&location=&details="
             str += "&src=pdx.edu_9mlocs8dpp5tujl3ouaa8akudo@group.calendar.google.com"
             return str;
+        }
+
+        buildZSUrl = function(timeS) {
+            // https://app.zoomshift.com/5041/shifts?interval=week&start_date=2019-09-23&end_date=2019-09-29&picked_date=2019-09-25
+            str = "https://app.zoomshift.com/5041/shifts?interval=day"
+            str += "&start_date=" + timeS.format("YYYY-MM-DD");
+            str += "&end_date=" + timeS.format("YYYY-MM-DD");
+            str += "&picked_date=" + timeS.format("YYYY-MM-DD");
+            // str = "https://app.zoomshift.com/5041/shifts?interval=week"
+            // str += "&start_date=" + timeS.startOf('week').add(1, 'days').format("YYYY-MM-DD");
+            // str += "&end_date=" + timeS.endOf('week').add(1, 'days').format("YYYY-MM-DD");
+            // str += "&picked_date=" + timeS.format("YYYY-MM-DD");
+            return str;
+        }
+
+        getAvailableAVers = function(timeS, duration) {
+            url = "https://app.zoomshift.com/5041/shifts?interval=day&start_date=2019-09-30&end_date=2019-09-30&picked_date=2019-09-30"
+                // var xhr = new XMLHttpRequest();
+                // xhr.onreadystatechange = function(e) {
+                //     if (xhr.status == 200 && xhr.readyState == 4) {
+                //         if (url != xhr.responseURL) {
+                //             alert("redirect detected to: " + xhr.responseURL)
+                //         } else {
+                //             alert("no redirect detected")
+                //             $.getJSON(url, function(data) {
+                //                 //data is the JSON string
+                //                 console.log(data)
+                //             });
+                //         }
+                //     }
+                // }
+                // xhr.open("GET", url, true);
+                // xhr.send();
         }
 
         // find available time for the day of "theTime"
