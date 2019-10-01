@@ -351,19 +351,27 @@
                     const timeP = moment(nextAvailable[i][j].end);
                     const diff1 = timeS.diff(timeBegin);
                     const diff2 = timeP.diff(timeS);
-                    const barIdle = jQuery('<div class=\"progress-bar text-white bg-transparent\" role=\"progressbar\" style=\"width: ' + Number(diff1 / alldaylong).toFixed(2) * 100 + '%\"></div>');
+                    const barIdle = jQuery('<div class=\"progress-bar text-secondary bg-transparent\" role=\"progressbar\" style=\"text-align: left; width: ' + Number(diff1 / alldaylong).toFixed(2) * 100 + '%\"></div>');
                     const barOk = jQuery('<div class=\"progress-bar text-white\" role=\"progressbar\" style=\"text-align: left; width: ' + Number(diff2 / alldaylong).toFixed(2) * 100 + '%\"></div>');
                     if (timeChk.date() === theTime.date()) {
                         barOk.addClass("bg-success");
                     } else {
                         barOk.addClass("bg-info");
                     }
+                    barIdle.append(timeBegin.format("h:mm"));
                     barOk.append(timeS.format("h:mm_") + getDurationString(timeS, timeP));
                     ggCalendarUrl = buildGCUrl(timeS)
                     barOk.attr('onclick', "window.open('" + ggCalendarUrl + "', '_blank');")
                     bars1.append(barIdle);
                     bars1.append(barOk);
                     timeBegin = timeP;
+                }
+                const timeOff = moment("19:00", "HH:mm").year(timeChk.year()).month(timeChk.month()).date(timeChk.date());
+                if (timeOff.diff(timeBegin) > 0) {
+                    const diff1 = timeOff.diff(timeBegin);
+                    const barIdle = jQuery('<div class=\"progress-bar text-secondary bg-transparent\" role=\"progressbar\" style=\"text-align: left; width: ' + Number(diff1 / alldaylong).toFixed(2) * 100 + '%\"></div>');
+                    barIdle.append(timeBegin.format("h:mm"));
+                    bars1.append(barIdle);
                 }
                 bars.append(bars1);
                 box.append(head);
