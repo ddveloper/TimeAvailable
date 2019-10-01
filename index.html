@@ -303,7 +303,7 @@
         updateAvailability = function(nextAvailable) {
             var output = [];
             $('#ta1').val("");
-            for (var i = 0; i < nextAvailable.length; i++) {
+            for (var i = 0; i < nextAvailable.length && i < 2; i++) {
                 for (var j = 0; j < nextAvailable[i].length; j++) {
                     const timeS = moment(nextAvailable[i][j].start);
                     const timeP = moment(nextAvailable[i][j].end);
