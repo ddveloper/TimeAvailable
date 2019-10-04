@@ -410,6 +410,9 @@
                 }
             });
             console.log("\treserved list:", reservedList);
+            reservedList.sort(function(a, b) {
+                return a.start.diff(b.start)
+            })
             return reverseFindSlots(theTime.format("HH:mm"), "19:00", reservedList, duration, theTime);
         };
 
