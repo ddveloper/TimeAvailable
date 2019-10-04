@@ -347,7 +347,8 @@
                 const alldaylong = moment("19:00", "HH:mm").diff(moment("08:00", "HH:mm"));
                 var timeBegin = moment("08:00", "HH:mm").year(timeChk.year()).month(timeChk.month()).date(timeChk.date());
                 for (var j = 0; j < nextAvailable[i].length; j++) {
-                    const timeS = moment(nextAvailable[i][j].start);
+                    var timeS = moment(nextAvailable[i][j].start);
+                    timeS = timeS.diff(timeBegin) < 0 ? timeBegin : timeS;
                     const timeP = moment(nextAvailable[i][j].end);
                     const diff1 = timeS.diff(timeBegin);
                     const diff2 = timeP.diff(timeS);
